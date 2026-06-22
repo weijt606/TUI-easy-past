@@ -23,7 +23,7 @@ It **auto-detects Markdown vs. plain text** and cleans each appropriately:
 
 ```sh
 # 1. Install
-go install github.com/weijt606/TUI-easy-past@latest
+go install github.com/weijt606/TUI-easy-past/cmd/tep@latest
 
 # 2. Copy some text out of your TUI (Claude Code, Codex, …) as usual.
 
@@ -42,7 +42,7 @@ pbpaste | tep - | pbcopy
 ## Install
 
 ```sh
-go install github.com/weijt606/TUI-easy-past@latest   # installs the `tep` binary
+go install github.com/weijt606/TUI-easy-past/cmd/tep@latest   # installs the `tep` binary
 ```
 
 Or build from source:
@@ -50,7 +50,7 @@ Or build from source:
 ```sh
 git clone https://github.com/weijt606/TUI-easy-past
 cd TUI-easy-past
-go build -o tep .
+go build -o tep ./cmd/tep
 ```
 
 No cgo, no third-party dependencies. Clipboard access shells out to the native
