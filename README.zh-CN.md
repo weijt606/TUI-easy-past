@@ -1,6 +1,11 @@
 # tep — TUI Easy Paste
 
-[English](README.md) | **简体中文**
+[![lang: English](https://img.shields.io/badge/lang-English-lightgrey.svg)](README.md)
+[![lang: 简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-blue.svg)](README.zh-CN.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Go](https://img.shields.io/badge/Go-1.24%2B-00ADD8.svg?logo=go&logoColor=white)](go.mod)
+[![Platforms](https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-555.svg)](#安装)
+[![Works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex%20CLI-7c5cff.svg)](#)
 
 从终端 / TUI(Claude Code、Codex CLI 等)里复制文本,粘到别处往往是乱的:每行
 都带着界面的缩进、正文被硬折行截断、盒状边框和 ANSI 颜色码混进来。`tep` 把这些
@@ -11,6 +16,26 @@
 - **纯文本** → 把被终端折行的句子重新拼回成干净的段落。
 - **Markdown** → 保留结构:标题、列表项、引用、表格、围栏代码块都保持原有边界,
   只把块内被折行的正文重新拼接。代码块逐字保留。
+
+## 快速开始
+
+```sh
+# 1. 安装
+go install github.com/weijt606/TUI-easy-past@latest
+
+# 2. 像平常一样,从 TUI(Claude Code、Codex 等)里复制文本。
+
+# 3. 原地清理剪贴板:
+tep
+
+# 4. 随便粘到哪里 —— 格式已经修好。
+```
+
+不想安装?一行管道直接处理(macOS):
+
+```sh
+pbpaste | tep - | pbcopy
+```
 
 ## 安装
 
@@ -31,15 +56,17 @@ go build -o tep .
 
 ## 用法
 
-```sh
-tep                 # 读取剪贴板、清理、写回(最常用)
-tep --dry-run       # 打印清理结果,不改动剪贴板
-tep --stdin         # 从标准输入读取,清理后写到标准输出
-cat session.log | tep -      # 等同于 --stdin
-tep --explain       # 额外把做了什么打印到 stderr
-```
+日常流程就是三步:**在 TUI 里复制 → 运行 `tep` → 粘贴。** 不带参数的 `tep`
+会读取剪贴板、清理、再写回。
 
-典型流程:在 TUI 里选中文本,复制,运行 `tep`,粘贴。
+```sh
+tep                       # 原地清理剪贴板(最常用)
+tep --dry-run             # 打印清理结果,不改动剪贴板
+tep --explain             # 额外把识别到/改动了什么打印到 stderr
+tep --markdown            # 自动识别猜错时,强制 Markdown 模式
+pbpaste | tep - | pbcopy  # 用显式管道代替默认的原地处理
+cat session.log | tep -   # 清理一份抓下来的日志,打印到 stdout
+```
 
 ### 参数
 

@@ -1,6 +1,11 @@
 # tep — TUI Easy Paste
 
-**English** | [简体中文](README.zh-CN.md)
+[![lang: English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
+[![lang: 简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-lightgrey.svg)](README.zh-CN.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Go](https://img.shields.io/badge/Go-1.24%2B-00ADD8.svg?logo=go&logoColor=white)](go.mod)
+[![Platforms](https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-555.svg)](#install)
+[![Works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex%20CLI-7c5cff.svg)](#)
 
 Copy text out of a terminal/TUI (Claude Code, Codex CLI, etc.) and it usually
 arrives mangled somewhere else: every line indented by the UI's padding, prose
@@ -13,6 +18,26 @@ It **auto-detects Markdown vs. plain text** and cleans each appropriately:
 - **Markdown** → structure is preserved: headings, list items, blockquotes,
   tables, and fenced code blocks keep their boundaries; only wrapped prose
   *within* a block is rejoined. Code fences are copied verbatim.
+
+## Quickstart
+
+```sh
+# 1. Install
+go install github.com/weijt606/TUI-easy-past@latest
+
+# 2. Copy some text out of your TUI (Claude Code, Codex, …) as usual.
+
+# 3. Clean the clipboard in place:
+tep
+
+# 4. Paste anywhere — formatting is fixed.
+```
+
+No install? Pipe through it in one shot (macOS):
+
+```sh
+pbpaste | tep - | pbcopy
+```
 
 ## Install
 
@@ -34,15 +59,18 @@ utility: `pbcopy`/`pbpaste` (macOS), `wl-copy`/`xclip`/`xsel` (Linux),
 
 ## Usage
 
-```sh
-tep                 # read clipboard, clean it, write it back (the common case)
-tep --dry-run       # print the cleaned result, leave the clipboard untouched
-tep --stdin         # read stdin, write cleaned text to stdout
-cat session.log | tep -      # same as --stdin
-tep --explain       # also report what was done (to stderr)
-```
+The everyday flow is three keystrokes' worth of work: **copy in your TUI → run
+`tep` → paste.** `tep` with no arguments reads the clipboard, cleans it, and
+writes it straight back.
 
-Typical flow: select text in your TUI, copy it, run `tep`, paste.
+```sh
+tep                       # clean the clipboard in place (the common case)
+tep --dry-run             # print the cleaned result; leave the clipboard alone
+tep --explain             # also report what it detected & changed (to stderr)
+tep --markdown            # force Markdown mode if auto-detect guesses wrong
+pbpaste | tep - | pbcopy  # explicit pipe instead of the in-place default
+cat session.log | tep -   # clean a captured log, print to stdout
+```
 
 ### Flags
 
