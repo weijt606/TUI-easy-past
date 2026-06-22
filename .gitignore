@@ -1,0 +1,13 @@
+# Binaries
+/tep
+*.exe
+
+# macOS
+.DS_Store
+
+# Local editor / agent config
+.claude/
+
+# Go
+*.test
+*.out
