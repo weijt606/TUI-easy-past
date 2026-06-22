@@ -14,15 +14,6 @@ It **auto-detects Markdown vs. plain text** and cleans each appropriately:
   tables, and fenced code blocks keep their boundaries; only wrapped prose
   *within* a block is rejoined. Code fences are copied verbatim.
 
-## Why another one?
-
-There are existing cleaners (e.g. `ai-clean`). `tep`'s focus is **correctness of
-the plain-vs-Markdown distinction** and a **width-aware reflow** that only rejoins
-a line when the next word genuinely wouldn't have fit at the detected wrap width —
-so authored line breaks survive and only the terminal's forced wraps are undone.
-It also never strips `>` (a Markdown blockquote marker) as if it were border
-chrome.
-
 ## Install
 
 ```sh
