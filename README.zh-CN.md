@@ -38,32 +38,34 @@ pbpaste | tep - | pbcopy
 
 ## 日常使用流程
 
+三步:
+
 ```mermaid
 flowchart LR
-    A(["安装一次"]) --> B["在 TUI 里<br/>复制文本"]
-    B --> C{"运行 tep"}
-    C -->|"新开终端标签"| T["tep"]
-    C -->|"Claude Code:输入 !tep"| T
-    C -->|"全局快捷键"| T
-    T --> D(["在目标处粘贴<br/>Reddit · X · 文档"])
+    A["1 · 在 TUI 里<br/>复制文本"] --> B["2 · 运行 tep"] --> C["3 · 粘贴<br/>—— 格式已修好"]
 ```
 
-1. **复制**:在 TUI 里照常选中并复制(鼠标选中,再 ⌘C / Ctrl-Shift-C)。内容进入
+1. **复制**:在 TUI 里照常选中并复制(鼠标选中,再 ⌘C / Ctrl-Shift-C),内容进入
    系统剪贴板。
 2. **运行 `tep`**:它读取剪贴板、清理、再写回。
-3. **粘贴**:在目标处粘贴 —— 格式已经修好。
+3. **粘贴**:在目标处粘贴(Reddit、X、文档、聊天框)。
 
-### TUI 开着时怎么运行 `tep`
+`tep` 操作的是系统剪贴板,所以在任何 shell 里都能跑——新开一个终端标签当然可以。但
+通常你连这个都不需要:
 
-`tep` 操作的是*系统剪贴板*,所以不必在你复制的那个 TUI 里运行。哪个方便用哪个:
+### 不用离开 Claude Code / Codex CLI 就能跑
 
-- **新开一个终端标签 / 窗口 / 分屏** —— 最通用,哪里都能用。
-- **Claude Code** —— 在输入框直接敲 `!tep`。`!` 前缀会在当前会话里执行 shell 命令,
-  不用离开 Claude Code 就能清理剪贴板。
-- **Codex CLI 及其他 TUI** —— 如果它有 shell 转义功能,就在里面跑 `tep`;否则新开一个
-  终端,或用全局快捷键。
-- **全局快捷键**(推荐)—— 复制、按键、粘贴。完全不需要找命令行提示符。见
-  [配置快捷键](#可选配置快捷键)。
+**Claude Code** 和 **Codex CLI** 都支持以 `!` 开头的行内 shell 命令。所以复制完之后,
+直接输入:
+
+```
+!tep
+```
+
+就能原地清理剪贴板——不用新开终端,也不用离开当前会话。然后切到你要粘贴的地方粘上即可。
+
+- **Claude Code** —— `!tep` 在会话的 shell 里执行,执行完回到输入框。
+- **Codex CLI** —— `!tep` 会按你的审批/沙箱设置执行,命令输出会回喂给对话。
 
 ## 安装
 
@@ -107,32 +109,6 @@ cat session.log | tep -   # 清理一份抓下来的日志,打印到 stdout
 | `--keep-ansi` | 保留 ANSI 转义序列。 |
 | `--markdown` | 强制 Markdown 模式(跳过自动识别)。 |
 | `--plain` | 强制纯文本模式(跳过自动识别)。 |
-
-## 可选:配置快捷键
-
-`tep` 刻意做成一个纯 CLI —— 它**不会**常驻后台,也不会自己去抢占全局按键(这样保持
-简单、可脚本化,也没有一个一直运行的进程)。想要一键"清理剪贴板",把你系统的快捷键
-工具指向 `tep` 即可:
-
-**macOS**
-
-- **Hammerspoon**(免费、可脚本)—— 加到 `~/.hammerspoon/init.lua`:
-  ```lua
-  hs.hotkey.bind({ "cmd", "alt" }, "V", function()
-    hs.execute("/opt/homebrew/bin/tep")   -- 原地清理剪贴板
-  end)
-  ```
-  这样 ⌘⌥V 清理剪贴板,再用 ⌘V 正常粘贴。
-- **Raycast / Alfred** —— 新建一个运行 `tep` 的 Script Command / Workflow,绑定快捷键。
-- **Shortcuts.app(快捷指令)** —— 新建快捷指令 → *运行 Shell 脚本* `tep` → 在
-  系统设置 → 键盘 → 键盘快捷键 里指定一个按键。
-
-**Linux** —— 在 GNOME/KDE 设置里把自定义快捷键绑到 `tep`,或用 `sxhkd`。
-
-**Windows** —— AutoHotkey:`^!v::Run, tep, , Hide`。
-
-> 小贴士:如果你总是粘到同一类目标,可以再绑一个键到强制模式 —— 比如发 X/Twitter 用
-> `tep --plain`,发 Reddit 用 `tep --markdown`。
 
 ## 处理流程(按顺序)
 
