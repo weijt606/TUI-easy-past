@@ -1,5 +1,7 @@
 # tep — TUI Easy Paste
 
+![tep — clean up text copied from a terminal/TUI. A black-and-white manga banner in four panels: copy mangled text, run tep, get clean text, paste it cleanly to Reddit/X.](banner.png)
+
 [![lang: English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
 [![lang: 简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-lightgrey.svg)](README.zh-CN.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
