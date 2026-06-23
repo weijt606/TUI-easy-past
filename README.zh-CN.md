@@ -1,6 +1,8 @@
 # tep — TUI Easy Paste
 
-![tep —— 清理从终端/TUI 复制的文本。黑白漫画四格 banner:复制乱码文本 → 运行 tep → 得到干净文本 → 干净地粘贴到 Reddit/X。](banner.png)
+<p align="center">
+  <img src="banner.png" alt="tep —— 清理从终端/TUI 复制的文本。黑白漫画四格 banner:复制乱码文本 → 运行 tep → 得到干净文本 → 干净地粘贴到 Reddit/X。" width="100%">
+</p>
 
 [![lang: English](https://img.shields.io/badge/lang-English-lightgrey.svg)](README.md)
 [![lang: 简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-blue.svg)](README.zh-CN.md)
