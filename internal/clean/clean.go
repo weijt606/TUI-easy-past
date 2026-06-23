@@ -372,7 +372,7 @@ func joinParagraph(para []string, width int) []string {
 		next := strings.TrimLeft(para[i], " \t")
 		word := firstWord(next)
 		if forcedWrap(cur, word, width) {
-			cur = cur + " " + next
+			cur = cur + joinSep(cur, next, width) + next
 		} else {
 			out = append(out, cur)
 			cur = next
@@ -380,6 +380,54 @@ func joinParagraph(para []string, width int) []string {
 	}
 	out = append(out, cur)
 	return out
+}
+
+// tokenConnectors are characters found inside URLs, file paths, and code
+// identifiers — places a long token can be character-wrapped by the terminal.
+const tokenConnectors = `/:._-=?&#%@~\+`
+
+// joinSep decides whether two wrapped fragments are glued with a space or not.
+// A normal word wrap broke at a space, so we re-insert one. But a URL, path, or
+// identifier longer than the line gets character-wrapped mid-token — there was
+// never a space at the break, so joining must not add one (e.g. a wrapped
+// "http://host/" + "path" must rejoin as "http://host/path", not ".../ path").
+func joinSep(prev, next string, width int) string {
+	combined := lastToken(prev) + firstWord(next)
+	// A single token wider than the line must have been character-wrapped; if it
+	// also carries a URL/path/identifier connector (and isn't a sentence break),
+	// the fragments belong together with no space.
+	if len([]rune(combined)) > width &&
+		strings.ContainsAny(combined, tokenConnectors) &&
+		!sentenceBoundary(prev, next) {
+		return ""
+	}
+	return " "
+}
+
+// lastToken returns the trailing run of non-space characters in s.
+func lastToken(s string) string {
+	f := strings.Fields(s)
+	if len(f) == 0 {
+		return ""
+	}
+	return f[len(f)-1]
+}
+
+// sentenceBoundary reports whether prev ends a sentence (.!?) and next starts
+// with a capital — a real prose break that should keep its space even if the
+// fragments happen to look token-like.
+func sentenceBoundary(prev, next string) bool {
+	p := []rune(strings.TrimRight(prev, " \t"))
+	if len(p) == 0 {
+		return false
+	}
+	switch p[len(p)-1] {
+	case '.', '!', '?':
+	default:
+		return false
+	}
+	n := []rune(strings.TrimLeft(next, " \t"))
+	return len(n) > 0 && unicode.IsUpper(n[0])
 }
 
 func firstWord(s string) string {

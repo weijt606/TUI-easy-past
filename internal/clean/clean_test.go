@@ -106,6 +106,37 @@ func TestBoxBlankLinesNotMerged(t *testing.T) {
 	}
 }
 
+// A long URL character-wrapped by the terminal must rejoin without a space
+// inserted at the break point.
+func TestWrappedURLRejoinsWithoutSpace(t *testing.T) {
+	in := "Check out the polling guide at the link below:\n" +
+		"http://localhost:3000/\n" +
+		"blog/how-to-choose-a-live-polling-tool"
+	pt := detect.PlainText
+	got, _ := Clean(in, Options{Format: &pt})
+	if strings.Contains(got, "3000/ blog") {
+		t.Errorf("space wrongly inserted inside URL:\n%q", got)
+	}
+	if !strings.Contains(got, "http://localhost:3000/blog/how-to-choose-a-live-polling-tool") {
+		t.Errorf("URL not rejoined cleanly:\n%q", got)
+	}
+}
+
+// A complete URL at the end of a word-wrapped line (shorter than the wrap
+// width) is followed by a real new word — the space must be kept.
+func TestCompleteURLKeepsTrailingSpace(t *testing.T) {
+	in := "For the details please see the full writeup at https://example.com/news\n" +
+		"and reply with your thoughts whenever you get a free moment today."
+	pt := detect.PlainText
+	got, _ := Clean(in, Options{Format: &pt})
+	if strings.Contains(got, "newsand") {
+		t.Errorf("space wrongly removed after a complete URL:\n%q", got)
+	}
+	if !strings.Contains(got, "https://example.com/news and reply") {
+		t.Errorf("expected a space after the complete URL:\n%q", got)
+	}
+}
+
 func TestNoRejoin(t *testing.T) {
 	in := "  line one here\n  line two here"
 	got, _ := Clean(in, Options{NoRejoin: true})
