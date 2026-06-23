@@ -42,15 +42,16 @@ pbpaste | tep - | pbcopy
 
 Three steps:
 
-```mermaid
-flowchart LR
-    A["1 · Copy text<br/>in your TUI"] --> B["2 · Run tep"] --> C["3 · Paste<br/>— formatting fixed"]
+```text
+①  Copy text in your TUI      (mouse-select, then ⌘C / Ctrl-Shift-C)
+        │
+        ▼
+②  Run  tep                   reads the clipboard, cleans it, writes it back
+        │
+        ▼
+③  Paste anywhere             line breaks, indentation & borders fixed
+                              (Reddit · X · docs · chat)
 ```
-
-1. **Copy** the text out of your TUI as usual (mouse-select, then ⌘C /
-   Ctrl-Shift-C). It lands on the system clipboard.
-2. **Run `tep`** — it reads the clipboard, cleans it, and writes it back.
-3. **Paste** at the destination (Reddit, X, a doc, a chat).
 
 `tep` works on the system clipboard, so it runs from any shell — a second
 terminal tab is always an option. But usually you don't even need one:
