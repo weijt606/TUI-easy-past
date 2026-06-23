@@ -95,6 +95,35 @@ No cgo, no third-party dependencies. Clipboard access shells out to the native
 utility: `pbcopy`/`pbpaste` (macOS), `wl-copy`/`xclip`/`xsel` (Linux),
 `clip`/`Get-Clipboard` (Windows).
 
+## Platform notes
+
+`tep` is a single static binary; only clipboard access differs per OS.
+
+**macOS** — works out of the box (`pbpaste`/`pbcopy` are built in). If the `tep`
+command isn't found after `go install`, add Go's bin directory to your PATH:
+
+```sh
+export PATH="$PATH:$(go env GOPATH)/bin"
+```
+
+**Linux** — install a clipboard helper first, then `tep` works the same:
+
+```sh
+sudo apt install wl-clipboard      # Wayland → wl-copy / wl-paste
+sudo apt install xclip             # X11 (or: xsel)
+
+wl-paste | tep - | wl-copy                                   # Wayland one-shot
+xclip -selection clipboard -o | tep - | xclip -selection clipboard   # X11
+```
+
+**Windows** — uses the built-in `Get-Clipboard` (read) and `clip` (write); no
+extra install. In PowerShell:
+
+```powershell
+tep                              # clean the clipboard in place
+Get-Clipboard | tep - | Set-Clipboard   # explicit pipe
+```
+
 ## Usage
 
 The everyday flow is three keystrokes' worth of work: **copy in your TUI → run

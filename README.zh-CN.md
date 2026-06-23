@@ -89,6 +89,35 @@ go build -o tep ./cmd/tep
 无 cgo、无第三方依赖。剪贴板读写通过系统自带工具完成:`pbcopy`/`pbpaste`
 (macOS)、`wl-copy`/`xclip`/`xsel`(Linux)、`clip`/`Get-Clipboard`(Windows)。
 
+## 各平台说明
+
+`tep` 是单个静态二进制,各平台只有剪贴板访问方式不同。
+
+**macOS** —— 开箱即用(`pbpaste`/`pbcopy` 系统自带)。如果 `go install` 后找不到
+`tep` 命令,把 Go 的 bin 目录加进 PATH:
+
+```sh
+export PATH="$PATH:$(go env GOPATH)/bin"
+```
+
+**Linux** —— 先装一个剪贴板辅助工具,之后 `tep` 用法一致:
+
+```sh
+sudo apt install wl-clipboard      # Wayland → wl-copy / wl-paste
+sudo apt install xclip             # X11(或 xsel)
+
+wl-paste | tep - | wl-copy                                   # Wayland 一行处理
+xclip -selection clipboard -o | tep - | xclip -selection clipboard   # X11
+```
+
+**Windows** —— 使用系统自带的 `Get-Clipboard`(读)和 `clip`(写),无需额外安装。
+在 PowerShell 里:
+
+```powershell
+tep                              # 原地清理剪贴板
+Get-Clipboard | tep - | Set-Clipboard   # 显式管道
+```
+
 ## 用法
 
 日常流程就是三步:**在 TUI 里复制 → 运行 `tep` → 粘贴。** 不带参数的 `tep`
