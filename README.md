@@ -4,7 +4,6 @@
 [![lang: 简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-lightgrey.svg)](README.zh-CN.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Go](https://img.shields.io/badge/Go-1.24%2B-00ADD8.svg?logo=go&logoColor=white)](go.mod)
-[![Platforms](https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-555.svg)](#install)
 [![Works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex%20CLI-7c5cff.svg)](#)
 
 Copy text out of a terminal/TUI (Claude Code, Codex CLI, etc.) and it usually
@@ -38,6 +37,37 @@ No install? Pipe through it in one shot (macOS):
 ```sh
 pbpaste | tep - | pbcopy
 ```
+
+## Everyday workflow
+
+```mermaid
+flowchart LR
+    A(["Install once"]) --> B["Copy text<br/>in your TUI"]
+    B --> C{"Run tep"}
+    C -->|"new terminal tab"| T["tep"]
+    C -->|"Claude Code: !tep"| T
+    C -->|"global hotkey"| T
+    T --> D(["Paste at destination<br/>Reddit · X · docs"])
+```
+
+1. **Copy** text out of your TUI the usual way (mouse-select, then ⌘C /
+   Ctrl-Shift-C). The selection lands on the system clipboard.
+2. **Run `tep`.** It reads the clipboard, cleans it, and writes it back.
+3. **Paste** at the destination — the formatting is fixed.
+
+### Running `tep` while a TUI is open
+
+`tep` works on the *system clipboard*, so it doesn't have to run inside the TUI
+you copied from. Use whichever is handy:
+
+- **A second terminal tab / window / split** — the universal option, works
+  everywhere.
+- **Claude Code** — type `!tep` at the prompt. The `!` prefix runs a shell
+  command in the session, so it cleans the clipboard without leaving Claude Code.
+- **Codex CLI and other TUIs** — if the tool has a shell-escape, run `tep` there;
+  otherwise use a second terminal or a global hotkey.
+- **A global hotkey** (recommended) — copy, press the key, paste. No shell prompt
+  needed at all. See [Bind a hotkey](#optional-bind-a-hotkey).
 
 ## Install
 
@@ -83,6 +113,34 @@ cat session.log | tep -   # clean a captured log, print to stdout
 | `--keep-ansi` | Leave ANSI escape sequences in place. |
 | `--markdown` | Force Markdown mode (skip auto-detection). |
 | `--plain` | Force plain-text mode (skip auto-detection). |
+
+## Optional: bind a hotkey
+
+`tep` is a plain CLI on purpose — it does **not** run a background daemon or grab
+global keys itself (that keeps it simple, scriptable, and free of a always-on
+process). To get a one-press "clean my clipboard" key, point your OS hotkey tool
+at `tep`:
+
+**macOS**
+
+- **Hammerspoon** (free, scriptable) — add to `~/.hammerspoon/init.lua`:
+  ```lua
+  hs.hotkey.bind({ "cmd", "alt" }, "V", function()
+    hs.execute("/opt/homebrew/bin/tep")   -- clean the clipboard in place
+  end)
+  ```
+  Now ⌘⌥V cleans the clipboard; paste normally with ⌘V.
+- **Raycast / Alfred** — add a Script Command / Workflow that runs `tep` and
+  assign it a hotkey.
+- **Shortcuts.app** — new shortcut → *Run Shell Script* `tep` → assign a key in
+  System Settings → Keyboard → Keyboard Shortcuts.
+
+**Linux** — bind a custom shortcut to `tep` in GNOME/KDE settings, or via `sxhkd`.
+
+**Windows** — AutoHotkey: `^!v::Run, tep, , Hide`.
+
+> Tip: if you usually paste to the same kind of destination, bind a second key to
+> a forced mode — e.g. `tep --plain` for X/Twitter, `tep --markdown` for Reddit.
 
 ## What it does, in order
 
