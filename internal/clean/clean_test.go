@@ -154,6 +154,36 @@ func TestWrappedParagraphFullyRejoins(t *testing.T) {
 	}
 }
 
+// When the first selected line lacks the gutter indent, dedent's minimum is 0;
+// later paragraphs must still not keep their leading TUI indent.
+func TestUnindentedFirstLineNoParagraphIndent(t *testing.T) {
+	in := "Happy to take a look here and there for you\n" +
+		"  and yes feedback posts are totally fine ok.\n" +
+		"\n" +
+		"  You're right about the whole thing going on\n" +
+		"  with external links buried deep by the feed."
+	pt := detect.PlainText
+	got, _ := Clean(in, Options{Format: &pt})
+	for _, line := range strings.Split(got, "\n") {
+		if strings.HasPrefix(line, " ") || strings.HasPrefix(line, "\t") {
+			t.Errorf("paragraph kept leading indent: %q\nfull:\n%s", line, got)
+		}
+	}
+}
+
+// Padded "blank" separator lines (spaces / NBSP / tabs) collapse to one blank.
+func TestPaddedBlankSeparatorsCollapse(t *testing.T) {
+	in := "First long enough paragraph line goes here now\n" +
+		"  \n" +
+		"  \n" +
+		"Second long enough paragraph line goes here too"
+	pt := detect.PlainText
+	got, _ := Clean(in, Options{Format: &pt})
+	if strings.Contains(got, "\n\n\n") {
+		t.Errorf("extra blank line(s) survived:\n%q", got)
+	}
+}
+
 func TestNoRejoin(t *testing.T) {
 	in := "  line one here\n  line two here"
 	got, _ := Clean(in, Options{NoRejoin: true})

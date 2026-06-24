@@ -53,7 +53,9 @@ func Clean(text string, opts Options) (string, Report) {
 	lines, rep.RightChrome = stripRightChrome(lines)
 
 	for i := range lines {
-		lines[i] = strings.TrimRight(lines[i], " \t")
+		// Trim ALL trailing whitespace (incl. tabs and exotic spaces like NBSP)
+		// so padded "blank" separator lines reliably become empty.
+		lines[i] = strings.TrimRightFunc(lines[i], unicode.IsSpace)
 	}
 
 	lines, rep.Dedented = dedent(lines)
@@ -365,7 +367,16 @@ func detectWidth(lines []string) int {
 // rejoined. joinSep decides whether each seam takes a space (word wrap) or none
 // (a URL/path character-wrapped mid-token).
 func joinParagraph(para []string, width int) []string {
-	cur := strings.TrimRight(para[0], " ")
+	first := para[0]
+	// Drop any residual leading indent on the paragraph's first line. dedent
+	// normally removes the common left padding, but if the very first selected
+	// line lacked it (a mouse selection that started mid-gutter), dedent's
+	// minimum is 0 and later paragraphs keep their TUI indent. Markdown list /
+	// blockquote items keep their leading whitespace so nesting survives.
+	if !startsBlock(first) {
+		first = strings.TrimLeft(first, " \t")
+	}
+	cur := strings.TrimRight(first, " ")
 	for i := 1; i < len(para); i++ {
 		next := strings.TrimLeft(para[i], " \t")
 		cur += joinSep(cur, next, width) + next
