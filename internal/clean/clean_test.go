@@ -137,6 +137,23 @@ func TestCompleteURLKeepsTrailingSpace(t *testing.T) {
 	}
 }
 
+// A wrapped paragraph must fully rejoin even when a line ends a few columns
+// short of the detected width (its next word landed exactly at the width). The
+// old width/forcedWrap check left such seams broken.
+func TestWrappedParagraphFullyRejoins(t *testing.T) {
+	in := "Memorize the structure, not the sentences.\n" +
+		"Break the speech into 5 to 7 beats and learns ok\n" +
+		"now and again."
+	pt := detect.PlainText
+	got, _ := Clean(in, Options{Format: &pt})
+	if strings.Contains(got, "\n") {
+		t.Errorf("paragraph not fully rejoined into one line:\n%q", got)
+	}
+	if !strings.Contains(got, "sentences. Break") {
+		t.Errorf("seam lost its space:\n%q", got)
+	}
+}
+
 func TestNoRejoin(t *testing.T) {
 	in := "  line one here\n  line two here"
 	got, _ := Clean(in, Options{NoRejoin: true})

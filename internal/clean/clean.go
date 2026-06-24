@@ -358,28 +358,19 @@ func detectWidth(lines []string) int {
 	return max
 }
 
-// joinParagraph merges wrapped lines within a paragraph. Two adjacent lines are
-// joined when the next line's first word would NOT have fit on the previous
-// line at the detected wrap width — i.e. the break was a forced wrap, not an
-// authored one. Returns one or more logical lines.
+// joinParagraph merges every line of a wrapped paragraph into one logical line.
+// reflow only runs when the detected width is >= 40 columns (see reflow), i.e.
+// the text is genuinely terminal-wrapped prose, never a short poem or list — so
+// every line break inside a blank-delimited block is a forced wrap and can be
+// rejoined. joinSep decides whether each seam takes a space (word wrap) or none
+// (a URL/path character-wrapped mid-token).
 func joinParagraph(para []string, width int) []string {
-	if len(para) == 1 {
-		return []string{para[0]}
-	}
-	var out []string
 	cur := strings.TrimRight(para[0], " ")
 	for i := 1; i < len(para); i++ {
 		next := strings.TrimLeft(para[i], " \t")
-		word := firstWord(next)
-		if forcedWrap(cur, word, width) {
-			cur = cur + joinSep(cur, next, width) + next
-		} else {
-			out = append(out, cur)
-			cur = next
-		}
+		cur += joinSep(cur, next, width) + next
 	}
-	out = append(out, cur)
-	return out
+	return []string{cur}
 }
 
 // tokenConnectors are characters found inside URLs, file paths, and code
@@ -437,11 +428,4 @@ func firstWord(s string) string {
 		return s
 	}
 	return s[:i]
-}
-
-// forcedWrap reports whether `word` placed after `cur` would overflow `width`.
-// If it would overflow, the original break was the terminal wrapping → join.
-func forcedWrap(cur, word string, width int) bool {
-	curLen := len([]rune(strings.TrimRight(cur, " ")))
-	return curLen+1+len([]rune(word)) > width
 }
